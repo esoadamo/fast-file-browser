@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Test if iselect is installed
+iselect --help &>/dev/null || {
+    echo "ERR: iselect is not installed" >&2
+    exit 1
+}
+
+# Navigate to the first argument if passed
+if [ -n "$1" ]; then
+    cd "$1" || exit 1
+fi
+
+
+# Browse files until quit
+while true; do
+    files="$(ls -a1F | grep -v '^./$')"
+    target="$(echo "$files" | iselect -af --name="$(pwd)")"
+    if [ -z "$target" ]; then
+        break
+    elif [ -d "$target" ]; then
+        cd "$target" || read _
+    else
+        xdg-open "$target" &>/dev/null &
+    fi
+done
+
+
+# Ask what to do with leftover background jobs
+while [ -n "$(jobs -p)" ]; do
+    echo "There are still background jobs, interrupt to kill them - '$(jobs -p)'"
+    sleep 10
+done
+
