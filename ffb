@@ -14,7 +14,7 @@ fi
 
 # Browse files until quit
 while true; do
-    files="$(echo '../'; ls -1F | grep -v '^./$')"
+    files="$(echo '../'; ls | grep -v '^./$')"
     target="$(echo "$files" | iselect -af --name="$(pwd)")"
     if [ -z "$target" ]; then
         break
